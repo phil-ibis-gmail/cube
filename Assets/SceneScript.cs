@@ -9,6 +9,8 @@ public class SceneScript : MonoBehaviour {
 	private bool mIsRandomizing;
 	public bool IsRandomizing {get {return mIsRandomizing;}}
 	public GUIText mDebugText;
+	private int mMoves;
+	public int Moves {get {return mMoves;}}
 
 	private Vector3 [] light_axes = 
 	{
@@ -31,6 +33,7 @@ public class SceneScript : MonoBehaviour {
 		}
 
 		ResetCube ();
+		mMoves=0;
 	}
 
 	enum eRKLayers
@@ -76,6 +79,12 @@ public class SceneScript : MonoBehaviour {
 	private void AddRotationTarget(eRKLayers layer, float angle_end, float angle_start)
 	{
 		mTargets.Add (new RotationTarget (layer, angle_end,angle_start));
+		mMoves++;
+	}
+
+	public void ResetMoveCounter()
+	{
+		mMoves=0;
 	}
 
 	private bool IsTargetLayer(HelloPhil cube, eRKLayers layer)
@@ -269,6 +278,11 @@ public class SceneScript : MonoBehaviour {
 		if(Input.GetKeyDown (KeyCode.Q))
 		{
 			ScrambleCube();
+		}
+
+		if(Input.GetKeyDown (KeyCode.K))
+		{
+			IsSolved();
 		}
 
 		if (Input.GetMouseButton (0))
@@ -536,6 +550,61 @@ public class SceneScript : MonoBehaviour {
 			if(index == 0) target_angle=-90.0f;
 			AddRotationTarget (layer,target_angle,0.0f);
 		}
+	}
+
+	private bool check_face_same(HelloPhil cube, HelloPhil.eColors [] colors, HelloPhil.eUnitCubeFaces face)
+	{
+		HelloPhil.eColors color = cube.GetFaceColor(face);
+		int index = System.Convert.ToInt32 (face); 
+		if(colors[index] == HelloPhil.eColors.TC_Black)
+			colors[index]=color;
+		if(colors[index] != color)
+		{
+			Debug.Log (string.Format ("not solved {0} {1} != {2}",face.ToString (),colors[index].ToString (),color.ToString ()));
+			return false;
+		}
+		return true;
+	}
+	
+	public bool IsSolved()
+	{
+		HelloPhil.eColors [] colors = new HelloPhil.eColors[6] 
+		{
+			HelloPhil.eColors.TC_Black,
+			HelloPhil.eColors.TC_Black,
+			HelloPhil.eColors.TC_Black,
+			HelloPhil.eColors.TC_Black,
+			HelloPhil.eColors.TC_Black,
+			HelloPhil.eColors.TC_Black,
+		};
 		
+		//i.e does every face have all edges the same color.
+		for (int i=0; i<mCubes.Length; i++)
+		{
+			if(mCubes[i].EqualsY(2))
+				if(!check_face_same (mCubes[i],colors,HelloPhil.eUnitCubeFaces.UC_Face_Top))
+					return false;
+			
+			if(mCubes[i].EqualsY(-2))
+				if(!check_face_same (mCubes[i],colors,HelloPhil.eUnitCubeFaces.UC_Face_Bottom))
+					return false;
+			
+			if(mCubes[i].EqualsX(2))
+				if(!check_face_same (mCubes[i],colors,HelloPhil.eUnitCubeFaces.UC_Face_Right))
+					return false;
+			
+			if(mCubes[i].EqualsX(-2))
+				if(!check_face_same (mCubes[i],colors,HelloPhil.eUnitCubeFaces.UC_Face_Left))
+					return false;
+			
+			if(mCubes[i].EqualsZ(2))
+				if(!check_face_same (mCubes[i],colors,HelloPhil.eUnitCubeFaces.UC_Face_Back))
+					return false;
+
+			if(mCubes[i].EqualsZ(-2))
+				if(!check_face_same (mCubes[i],colors,HelloPhil.eUnitCubeFaces.UC_Face_Front))
+					return false;
+		}
+		return true;
 	}
 }
