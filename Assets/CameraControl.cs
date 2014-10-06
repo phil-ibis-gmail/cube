@@ -5,7 +5,6 @@ public class CameraControl : MonoBehaviour {
 
 	public float HScale = 400.0f;
 	public float VScale = 400.0f;
-	public GUIText mDebugText;
 	Quaternion QStart;
 
 	Quaternion QTarget;
@@ -77,12 +76,5 @@ public class CameraControl : MonoBehaviour {
 			QTarget=Quaternion.Euler(0,0,0);
 			CurrentLookTime=TotalLookTime;
 		}
-		
-		if(Input.GetMouseButton(0))
-		{
-			mDebugText.text = string.Format (Input.mousePosition.ToString());
-		}
-		
-		//transform.rotation=QTarget*QStart;
 	}
 }

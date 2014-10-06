@@ -8,7 +8,6 @@ public class SceneScript : MonoBehaviour {
 	private List<RotationTarget> mTargets= new List<RotationTarget>();
 	private bool mIsRandomizing;
 	public bool IsRandomizing {get {return mIsRandomizing;}}
-	public GUIText mDebugText;
 	private int mMoves;
 	public int Moves {get {return mMoves;}}
 
@@ -381,8 +380,6 @@ public class SceneScript : MonoBehaviour {
 						float angle = 90.0f*(delta)/100.0f;
 						if(angle > 90.0f) angle=90.0f;
 						if(angle < -90.0f) angle=-90.0f;
-						//mDebugText.text = string.Format("angle {0} (delta_x[{1}] selected[{2}] input[{3}]",angle,delta,mSelectionSet.mMouseSelected.y,Input.mousePosition.y);
-						//Debug.Log(mDebugText.text);
 						Vector3 rotation_axis = GetRotationAxis(mSelectionSet.mSelectedLayer);
 						Quaternion rotation = Quaternion.AngleAxis(angle,rotation_axis);
 						foreach(SelectionSetElement e in mSelectionSet.mSelectionSet)
@@ -407,8 +404,6 @@ public class SceneScript : MonoBehaviour {
 					if(angle < -90.0f) angle=-90.0f;
 					if(angle > 90.0f) angle=90.0f;
 
-					//mDebugText.text = string.Format("final angle {0} (delta_x[{1}] selected[{2}] input[{3}]",angle,delta,mSelectionSet.mMouseSelected.y,Input.mousePosition.y);
-					//Debug.Log(mDebugText.text);
 					Vector3 rotation_axis = GetRotationAxis(mSelectionSet.mSelectedLayer);
 					Quaternion rotation = Quaternion.AngleAxis(angle,rotation_axis);
 					foreach(SelectionSetElement e in mSelectionSet.mSelectionSet)
@@ -449,10 +444,6 @@ public class SceneScript : MonoBehaviour {
 			target.mTotalDeltas+=delta_angle;
 
 			Vector3 axis = GetRotationAxis(target.mLayer);
-
-			//mDebugText.text = string.Format("lerp_t [{0}] delta_time[{4}] absolute_angle[{1}]  delta_angle[{2}] current[{3}] total_deltas[{5}] start[{6}]",
-			//	lerp_t,absolute_angle,delta_angle,target.mCurrentAngle,Time.deltaTime,target.mTotalDeltas,target.mStartAngle);
-			//Debug.Log(mDebugText.text);
 
 			for (int i=0; i<mCubes.Length; i++) 
 			{
