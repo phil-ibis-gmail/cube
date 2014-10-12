@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Threading;
 
 public class SolveTimer : MonoBehaviour {
 
@@ -20,11 +21,18 @@ public class SolveTimer : MonoBehaviour {
 	public GUIText mMethodText;
 	private SceneScript mScene;
 	private float mTime;
+	private string mTagString;
 
 	// Use this for initialization
 	void Start () {
 		mState=States.WaitForStart;
 		mScene = SolveTimer.FindObjectOfType<SceneScript>();
+		mTagString = "phil";
+		
+	}
+	
+	void OnGUI() {
+		mTagString = GUI.TextField(new Rect(70, 70, 200, 20), mTagString, 25);
 	}
 	
 	// Update is called once per frame
@@ -96,7 +104,7 @@ public class SolveTimer : MonoBehaviour {
 			{
 				if(mButton.HitTest(Input.mousePosition))
 				{
-					postResults(tseconds,"phil",mScene.Moves,mScene.IsSolved());
+					postResults(tseconds,mTagString,mScene.Moves,mScene.IsSolved());
 					mState = States.Solved;
 				}
 			}
@@ -110,13 +118,18 @@ public class SolveTimer : MonoBehaviour {
 	
 	void postResults(int seconds, string tag, int moves,bool solved)
 	{
-		string addr="http://ec2-184-73-83-135.compute-1.amazonaws.com/glasses/rubik.php";
+		string addr="http://www.ibis-stuff.ca/glasses/rubik.php";
 		string url_tag = WWW.EscapeURL(tag);
+		string method=WWW.EscapeURL (mMethodText.text);
 		string is_solved=solved?"solved":"not_solved";
 		string url = string.Format ("{0}?seconds={1}&tag={2}&moves={3}&solved={4}&method={5}",addr,seconds,url_tag,moves,is_solved,mMethodText.text);
-		var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
-		request.Method="PUT";
-		System.Net.HttpWebResponse response = (System.Net.HttpWebResponse)request.GetResponse();
-		string returnString = response.StatusCode.ToString();
+
+		(new Thread( () => 
+		{
+			var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+			request.Method="PUT";
+			System.Net.HttpWebResponse response = (System.Net.HttpWebResponse)request.GetResponse();
+			string returnString = response.StatusCode.ToString();
+		})).Start();
 	}
 }
