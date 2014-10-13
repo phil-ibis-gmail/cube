@@ -118,7 +118,7 @@ public class SolveTimer : MonoBehaviour {
 	
 	void postResults(int seconds, string tag, int moves,bool solved)
 	{
-		string addr="http://www.ibis-stuff.ca/glasses/rubik.php";
+		string addr="http://www.ibis-stuff.ca/apps";
 		string url_tag = WWW.EscapeURL(tag);
 		string method=WWW.EscapeURL (mMethodText.text);
 		string is_solved=solved?"solved":"not_solved";
